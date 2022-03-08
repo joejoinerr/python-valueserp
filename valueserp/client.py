@@ -1,8 +1,10 @@
+import enum
 from typing import (
     TYPE_CHECKING,
     Any,
     Dict,
-    Optional
+    Optional,
+    Union
 )
 
 import requests as requests
@@ -10,15 +12,49 @@ from requests_toolbelt.sessions import BaseUrlSession
 
 from valueserp import const
 from valueserp.exceptions import APIError
+from valueserp.serp.web import WebSERP
 
 if TYPE_CHECKING:
     import valueserp
+
+
+class SearchType(enum.Enum):
+    NEWS = 'news'
+    IMAGES = 'images'
+    VIDEOS = 'videos'
+    PLACES = 'places'
+    PLACE_DETAILS = 'place_details'
+    SHOPPING = 'shopping'
+    PRODUCT = 'product'
 
 
 class GoogleClient:
     def __init__(self, credentials: 'valueserp.Credentials'):
         self.credentials = credentials
         self._session = BaseUrlSession(const.ENDPOINT)
+
+    def search(self,
+               params: Dict[str, Any]) -> Dict[str, Any]:
+        response = self._request(const.API_PATH['search'],
+                                 params=params)
+        return response
+
+    def web_search(self,
+                   query: str,
+                   location: Union[str, 'valueserp.Location', None] = None,
+                   site: Optional[str] = None,
+                   **kwargs) -> WebSERP:
+        if site:
+            query = f'site:{site} {query}'
+
+        search_params = {
+            'q': query,
+            'location': location,
+        }
+        search_params.update(kwargs)
+        response = self.search(search_params)
+
+        return WebSERP(response)
 
     def _request(self,
                  path: str,
