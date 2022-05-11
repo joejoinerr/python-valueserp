@@ -41,7 +41,7 @@ class WebSERP(BaseSERP):
             title = link['title']
             url = link['link']
             url_displayed = link['displayed_link']
-            description = link['snippet']
+            description = link.get('snippet')
             date = link.get('date')
             links.append(OrganicLink(position=position,
                                      block_position=block_position,
