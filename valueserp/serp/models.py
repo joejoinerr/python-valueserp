@@ -9,7 +9,7 @@ class OrganicLink:
     title: str = dataclasses.field(repr=False)
     url: str
     url_displayed: str = dataclasses.field(repr=False)
-    description: str = dataclasses.field(repr=False)
+    description: Optional[str] = dataclasses.field(default=None, repr=False)
     date: Optional[str] = dataclasses.field(default=None, repr=False)
 
 
