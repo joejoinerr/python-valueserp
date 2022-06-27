@@ -1,3 +1,5 @@
+from __future__ import annotations
+
 from typing import List, Optional
 
 from valueserp.serp.base import BaseSERP
@@ -14,42 +16,29 @@ class WebSERP(BaseSERP):
         super().__init__(raw)
 
     def info(self) -> SERPInfo:
-        search_metadata = self.raw['search_metadata']
-        search_parameters = self.raw['search_parameters']
-        search_info = self.raw['search_information']
+        search_metadata = self.raw.get('search_metadata', {})
+        search_parameters = self.raw.get('search_parameters', {})
+        search_info = self.raw.get('search_information', {})
 
-        url = search_metadata['engine_url']
-        query = search_parameters['q']
-        query_displayed = search_info['query_displayed']
-        location = search_parameters['location']
-        total_results = search_info['total_results']
-
-        return SERPInfo(url=url,
-                        query=query,
-                        query_displayed=query_displayed,
-                        location=location,
-                        total_results=total_results)
+        return SERPInfo(url=search_metadata.get('engine_url'),
+                        query=search_parameters.get('q'),
+                        query_displayed=search_info.get('query_displayed'),
+                        location=search_parameters.get('location'),
+                        total_results=search_info.get('total_results'))
 
     @property
-    def links(self) -> Optional[List[OrganicLink]]:
-        raw_links = self.raw['organic_results']
+    def links(self) -> List[OrganicLink]:
+        raw_links = self.raw.get('organic_results', [])
 
         links = []
         for link in raw_links:
-            position = link['position']
-            block_position = link['block_position']
-            title = link['title']
-            url = link['link']
-            url_displayed = link['displayed_link']
-            description = link.get('snippet')
-            date = link.get('date')
-            links.append(OrganicLink(position=position,
-                                     block_position=block_position,
-                                     title=title,
-                                     url=url,
-                                     url_displayed=url_displayed,
-                                     description=description,
-                                     date=date))
+            links.append(OrganicLink(position=link.get('position'),
+                                     block_position=link.get('block_position'),
+                                     title=link.get('title'),
+                                     url=link.get('link'),
+                                     url_displayed=link.get('displayed_link'),
+                                     description=link.get('snippet'),
+                                     date=link.get('date')))
 
         return links
 
@@ -59,36 +48,33 @@ class WebSERP(BaseSERP):
         if not raw_snippet:
             return None
 
-        featured_answer = raw_snippet['answers'][0]
-        text = featured_answer['answer']
-        title = featured_answer['source']['title']
-        source_url = featured_answer['source']['link']
-        return FeaturedSnippet(text=text,
-                               title=title,
-                               source_url=source_url)
+        featured_answer = raw_snippet.get('answers', [{}])[0]
+        featured_answer_source = featured_answer.get('source', {})
+        return FeaturedSnippet(text=featured_answer.get('answer'),
+                               title=featured_answer_source.get('title'),
+                               source_url=featured_answer_source.get('link'))
 
     @property
-    def related_searches(self) -> Optional[List[str]]:
-        raw_rel_searches = self.raw.get('related_searches')
+    def related_searches(self) -> List[str] | None:
+        raw_rel_searches = self.raw.get('related_searches', [])
         if not raw_rel_searches:
             return None
 
-        related_searches = set(search['query'] for search in raw_rel_searches)
+        related_searches = set(query for search in raw_rel_searches
+                               if (query := search.get('query')))
         return list(related_searches)
 
     @property
     def people_also_ask(self) -> Optional[List[PAAItem]]:
-        raw_paa = self.raw.get('related_questions')
+        raw_paa = self.raw.get('related_questions', [])
         if not raw_paa:
             return None
 
         paa_items = []
         for paa in raw_paa:
-            query = paa['question']
-            answer = paa['answer']
-            source_url = paa['source']['link']
-            paa_items.append(PAAItem(question=query,
-                                     answer=answer,
+            source_url = paa.get('source', {}).get('link')
+            paa_items.append(PAAItem(question=paa.get('question'),
+                                     answer=paa.get('answer'),
                                      source_url=source_url))
 
         return paa_items
