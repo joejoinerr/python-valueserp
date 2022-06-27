@@ -1,27 +1,28 @@
+from __future__ import annotations
+
 import dataclasses
-from typing import Optional
 
 
 @dataclasses.dataclass
 class OrganicLink:
-    position: int
-    block_position: int = dataclasses.field(repr=False)
-    title: str = dataclasses.field(repr=False)
-    url: str
-    url_displayed: str = dataclasses.field(repr=False)
-    description: Optional[str] = dataclasses.field(default=None, repr=False)
-    date: Optional[str] = dataclasses.field(default=None, repr=False)
+    position: int | None
+    block_position: int | None = dataclasses.field(repr=False)
+    title: str | None = dataclasses.field(repr=False)
+    url: str | None
+    url_displayed: str | None = dataclasses.field(repr=False)
+    description: str | None = dataclasses.field(repr=False)
+    date: str | None = dataclasses.field(repr=False)
 
 
 @dataclasses.dataclass
 class FeaturedSnippet:
-    text: str
-    title: str
-    source_url: str
+    text: str | None
+    title: str | None
+    source_url: str | None
 
 
 @dataclasses.dataclass
 class PAAItem:
-    question: str
-    answer: str
-    source_url: str
+    question: str | None
+    answer: str | None
+    source_url: str | None
