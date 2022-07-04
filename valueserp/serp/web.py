@@ -1,3 +1,5 @@
+"""Provides the SERP objects."""
+
 from __future__ import annotations
 
 from typing import List, Optional
@@ -12,10 +14,13 @@ from valueserp.serp.models import (
 
 
 class WebSERP(BaseSERP):
+    """Represents a standard web search results page."""
+
     def __init__(self, raw):
         super().__init__(raw)
 
     def info(self) -> SERPInfo:
+        """Information about the SERP."""
         search_metadata = self.raw.get('search_metadata', {})
         search_parameters = self.raw.get('search_parameters', {})
         search_info = self.raw.get('search_information', {})
@@ -28,6 +33,7 @@ class WebSERP(BaseSERP):
 
     @property
     def links(self) -> List[OrganicLink]:
+        """A list of the organic search results."""
         raw_links = self.raw.get('organic_results', [])
 
         links = []
@@ -44,6 +50,7 @@ class WebSERP(BaseSERP):
 
     @property
     def featured_snippet(self) -> Optional[FeaturedSnippet]:
+        """The featured snippet, if shown."""
         raw_snippet = self.raw.get('answer_box')
         if not raw_snippet:
             return None
@@ -56,6 +63,7 @@ class WebSERP(BaseSERP):
 
     @property
     def related_searches(self) -> List[str] | None:
+        """A list of related search terms."""
         raw_rel_searches = self.raw.get('related_searches', [])
         if not raw_rel_searches:
             return None
@@ -66,6 +74,7 @@ class WebSERP(BaseSERP):
 
     @property
     def people_also_ask(self) -> Optional[List[PAAItem]]:
+        """A list of items from the "People also ask" feature."""
         raw_paa = self.raw.get('related_questions', [])
         if not raw_paa:
             return None
