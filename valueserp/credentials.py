@@ -1,3 +1,7 @@
+"""Provides the Credentials object for use in the Client."""
+
+__all__ = ['Credentials']
+
 import requests
 
 from valueserp.const import API_PATH, ENDPOINT
@@ -5,11 +9,31 @@ from valueserp.exceptions import InvalidCredentials
 
 
 class Credentials:
+    """Represents the credentials (API key) used to connect to VALUE SERP.
+
+    The object offers a `validate()` method to check that credentials work
+    before using them to access the API.
+
+    Attributes:
+        api_key: A consumer API key provided by VALUE SERP.
+    """
+
     def __init__(self, api_key: str):
         self.api_key = api_key
         self.validate()
 
     def validate(self) -> bool:
+        """Validates the provided API key.
+
+        This works by making a request to the account API endpoint, and raising
+        an error if the request is unsuccessful.
+
+        Returns:
+            True if the API key is valid.
+
+        Raises:
+            InvalidCredentials: The credentials are not valid.
+        """
         params = {'api_key': self.api_key}
         account_path = ENDPOINT + API_PATH['account']
         res = requests.get(account_path, params=params)
