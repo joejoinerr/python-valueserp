@@ -1,3 +1,10 @@
+"""Provides search clients for accessing the APIs.
+
+Currently, only Google is supported by VALUE SERP.
+"""
+
+__all__ = ['GoogleClient', 'SearchType']
+
 import enum
 from typing import (
     TYPE_CHECKING,
@@ -19,6 +26,8 @@ if TYPE_CHECKING:
 
 
 class SearchType(enum.Enum):
+    """Types of searches that can be made using the API."""
+
     NEWS = 'news'
     IMAGES = 'images'
     VIDEOS = 'videos'
