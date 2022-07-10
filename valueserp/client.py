@@ -56,6 +56,7 @@ class GoogleClient:
     def __init__(self, credentials: 'valueserp.Credentials'):
         self.credentials = credentials
         self._session = BaseUrlSession(const.ENDPOINT)
+        self._session.params = {'api_key': self.credentials.api_key}
         # Set up default timeout and retry strategies
         retry_strategy = Retry(total=3,
                                status_forcelist=[429, 500, 502, 503, 504],
@@ -93,16 +94,10 @@ class GoogleClient:
                  params: Optional[Dict[str, Any]] = None,
                  headers: Optional[Dict[str, str]] = None,
                  data: Optional[Dict[str, Any]] = None) -> dict:
-        final_params = {
-            'api_key': self.credentials.api_key,
-        }
-        if isinstance(params, dict):
-            final_params.update(params)
-
         try:
             res = self._session.request(request_type,
                                         path,
-                                        params=final_params,
+                                        params=params,
                                         headers=headers,
                                         json=data)
             raw_json = res.json()
