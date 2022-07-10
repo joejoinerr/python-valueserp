@@ -15,6 +15,8 @@ from typing import (
 )
 
 import requests as requests
+from requests.adapters import HTTPAdapter
+from requests.packages.urllib3.util.retry import Retry
 from requests_toolbelt.sessions import BaseUrlSession
 
 from valueserp import const
@@ -37,10 +39,30 @@ class SearchType(enum.Enum):
     PRODUCT = 'product'
 
 
+class TimeoutHTTPAdapter(HTTPAdapter):
+    """Custom HTTPAdapter to enable a default timeout"""
+    DEFAULT_TIMEOUT = 5  # seconds
+
+    def __init__(self, *args, **kwargs):
+        self.timeout = kwargs.pop('timeout', self.DEFAULT_TIMEOUT)
+        super().__init__(*args, **kwargs)
+
+    def send(self, request, **kwargs):
+        kwargs.setdefault('timeout', self.timeout)
+        return super().send(request, **kwargs)
+
+
 class GoogleClient:
     def __init__(self, credentials: 'valueserp.Credentials'):
         self.credentials = credentials
         self._session = BaseUrlSession(const.ENDPOINT)
+        # Set up default timeout and retry strategies
+        retry_strategy = Retry(total=3,
+                               status_forcelist=[429, 500, 502, 503, 504],
+                               allowed_methods=['HEAD', 'GET', 'OPTIONS'])
+        adapter = TimeoutHTTPAdapter(max_retries=retry_strategy)
+        self._session.mount('https://', adapter)
+        self._session.mount('http://', adapter)
 
     def search(self,
                params: Dict[str, Any]) -> Dict[str, Any]:
