@@ -33,6 +33,12 @@ extensions = [
     'sphinx_rtd_theme'
 ]
 
+napoleon_numpy_docstring = False
+autodoc_default_options = {
+    'member-order': 'bysource',
+    'undoc-members': True,
+}
+
 # Add any paths that contain templates here, relative to this directory.
 templates_path = ['_templates']
 
