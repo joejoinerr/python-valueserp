@@ -1,20 +1,28 @@
-.. python-valueserp documentation master file, created by
-   sphinx-quickstart on Mon Jul  4 17:08:21 2022.
-   You can adapt this file completely to your liking, but it should at least
-   contain the root `toctree` directive.
-
 Welcome to python-valueserp's documentation!
 ============================================
 
 .. toctree::
    :maxdepth: 2
-   :caption: Contents:
+   :caption: Client
+   :hidden:
+
+   client/credentials
+   client/googleclient
 
 
+.. toctree::
+   :maxdepth: 2
+   :caption: SERP
+   :hidden:
 
-Indices and tables
-==================
+   serps/serpinfo
+   serps/webserp
+   serps/features
 
-* :ref:`genindex`
-* :ref:`modindex`
-* :ref:`search`
+
+.. toctree::
+   :maxdepth: 2
+   :caption: Other
+   :hidden:
+
+   exceptions
