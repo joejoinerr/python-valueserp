@@ -1,5 +1,5 @@
 Google client
 =============
 
-.. autoclass:: valueserp.client.GoogleClient
+.. autoclass:: valueserp.GoogleClient
    :members:
