@@ -14,6 +14,9 @@ class Credentials:
     The object offers a `validate()` method to check that credentials work
     before using them to access the API.
 
+    Args:
+        api_key: A consumer API key provided by VALUE SERP.
+
     Attributes:
         api_key: A consumer API key provided by VALUE SERP.
     """
@@ -25,14 +28,16 @@ class Credentials:
     def validate(self) -> bool:
         """Validates the provided API key.
 
-        This works by making a request to the account API endpoint, and raising
-        an error if the request is unsuccessful.
+        This works by making a request to the `account API endpoint`_ (no cost),
+        and raising an error if the request is unsuccessful.
 
         Returns:
             True if the API key is valid.
 
         Raises:
             InvalidCredentials: The credentials are not valid.
+
+        .. _account API endpoint: https://www.valueserp.com/docs/account-api
         """
         params = {'api_key': self.api_key}
         account_path = ENDPOINT + API_PATH['account']
