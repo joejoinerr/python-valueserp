@@ -1,5 +1,4 @@
-Welcome to python-valueserp's documentation!
-============================================
+.. include:: ../README.rst
 
 .. toctree::
    :maxdepth: 2
