@@ -1,1 +1,1 @@
-from valueserp.serp.base import BaseSERP
+from valueserp.serp import BaseSERP
