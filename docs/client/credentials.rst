@@ -1,5 +1,5 @@
 Credentials
 ===========
 
-.. automodule:: valueserp.credentials
+.. autoclass:: valueserp.Credentials
    :members:
