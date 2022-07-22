@@ -4,13 +4,23 @@ from __future__ import annotations
 
 from typing import List, Optional
 
-from valueserp.serp.base import BaseSERP
-from valueserp.serp.info import SERPInfo
 from valueserp.serp.models import (
+    SERPInfo,
     FeaturedSnippet,
     OrganicLink,
     PAAItem
 )
+
+
+class BaseSERP:
+    """The default base SERP from which more specific types are inherited.
+
+    Attributes:
+        raw: The raw SERP data as retrieved from the API.
+    """
+
+    def __init__(self, raw):
+        self.raw = raw
 
 
 class WebSERP(BaseSERP):
