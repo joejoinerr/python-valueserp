@@ -53,6 +53,15 @@ class TimeoutHTTPAdapter(HTTPAdapter):
 
 
 class GoogleClient:
+    """The primary interface for interacting with Google via VALUE SERP.
+
+    Args:
+        credentials: An initialized :class:`valueserp.Credentials` object.
+
+    Attributes:
+        credentials: An initialized :class:`valueserp.Credentials` object.
+    """
+
     def __init__(self, credentials: 'valueserp.Credentials'):
         self.credentials = credentials
         self._session = BaseUrlSession(const.ENDPOINT)
@@ -65,8 +74,15 @@ class GoogleClient:
         self._session.mount('https://', adapter)
         self._session.mount('http://', adapter)
 
-    def search(self,
-               params: Dict[str, Any]) -> Dict[str, Any]:
+    def search(self, params: Dict[str, Any]) -> Dict[str, Any]:
+        """Conducts a generic search with the API and returns the response.
+
+        Args:
+            params: Parameters to send to the API with the request.
+
+        Returns:
+            The API response as a dict parsed from JSON.
+        """
         response = self._request(const.API_PATH['search'],
                                  params=params)
         return response
@@ -76,6 +92,22 @@ class GoogleClient:
                    location: Union[str, 'valueserp.Location', None] = None,
                    site: Optional[str] = None,
                    **kwargs) -> WebSERP:
+        """Makes a web search.
+
+        Any `custom parameters`_ can be added as keyword arguments and will be
+        passed directly to the API.
+
+        Args:
+            query: The query to search in Google.
+            location: The location to use for the search in Google.
+            site: Add a domain to use a site: search
+
+        Returns:
+            A :class:`~valueserp.serp.web.WebSERP` object containing the API
+            response.
+
+        .. _custom parameters: https://www.valueserp.com/docs/search-api/searches/google/search#googleSearchParameters
+        """
         if site:
             query = f'site:{site} {query}'
 
@@ -94,6 +126,22 @@ class GoogleClient:
                  params: Optional[Dict[str, Any]] = None,
                  headers: Optional[Dict[str, str]] = None,
                  data: Optional[Dict[str, Any]] = None) -> dict:
+        """Makes a request to the VALUE SERP API.
+
+        Args:
+            path: The API path to request. This must start with a '/' character.
+            request_type:
+                The type of HTTP request to send, such as 'GET' or 'POST'.
+            params: Parameters to attach to the request as query strings.
+            headers: Headers to provide with the request.
+            data: JSON data to send along with the request.
+
+        Returns:
+            The API response as a dict parsed from JSON.
+
+        Raises:
+            APIError: The API responded with an error.
+        """
         try:
             res = self._session.request(request_type,
                                         path,
