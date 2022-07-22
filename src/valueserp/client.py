@@ -21,7 +21,7 @@ from requests_toolbelt.sessions import BaseUrlSession
 
 from valueserp import const
 import valueserp.exceptions
-from valueserp.serp.web import WebSERP
+from valueserp.serp import WebSERP
 
 if TYPE_CHECKING:
     import valueserp
