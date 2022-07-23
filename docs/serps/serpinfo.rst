@@ -1,6 +1,6 @@
 SERPInfo
 ========
 
-.. automodule:: valueserp.serp.info
+.. autoclass:: valueserp.models.SERPInfo
    :no-undoc-members:
    :members:

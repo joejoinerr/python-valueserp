@@ -1,5 +1,5 @@
 WebSERP
 =======
 
-.. automodule:: valueserp.serp.web
+.. autoclass:: valueserp.serp.WebSERP
    :members:

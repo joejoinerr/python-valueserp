@@ -1,6 +1,7 @@
 SERP features
 =============
 
-.. automodule:: valueserp.serp.models
+.. automodule:: valueserp.models
    :no-undoc-members:
+   :exclude-members: SERPInfo
    :members:
