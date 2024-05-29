@@ -111,7 +111,7 @@ class AsyncGoogleClient:
             data: JSON data to send along with the request.
 
         Returns:
-            The API response as a dict parsed from JSON.
+            The API response body.
 
         Raises:
             APIError: The API responded with an error.
