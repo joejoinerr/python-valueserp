@@ -21,9 +21,10 @@ class Credentials:
         api_key: A consumer API key provided by VALUE SERP.
     """
 
-    def __init__(self, api_key: str):
+    def __init__(self, api_key: str, auto_validate: bool = True):
         self.api_key = api_key
-        self.validate()
+        if auto_validate:
+            self.validate()
 
     def validate(self) -> bool:
         """Validates the provided API key.

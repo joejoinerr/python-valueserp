@@ -2,3 +2,4 @@
 
 from valueserp.credentials import Credentials
 from valueserp.client import GoogleClient
+from valueserp.aclient import AsyncGoogleClient
