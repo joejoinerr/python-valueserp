@@ -3,7 +3,7 @@
 Currently, only Google is supported by VALUE SERP.
 """
 
-__all__ = ['GoogleClient', 'SearchType']
+__all__ = ['GoogleClient']
 
 import enum
 from typing import (
@@ -22,21 +22,10 @@ from requests_toolbelt.sessions import BaseUrlSession
 from valueserp import const
 import valueserp.exceptions
 from valueserp.serp import WebSERP
+from valueserp.searchtype import SearchType
 
 if TYPE_CHECKING:
     import valueserp
-
-
-class SearchType(enum.Enum):
-    """Types of searches that can be made using the API."""
-
-    NEWS = 'news'
-    IMAGES = 'images'
-    VIDEOS = 'videos'
-    PLACES = 'places'
-    PLACE_DETAILS = 'place_details'
-    SHOPPING = 'shopping'
-    PRODUCT = 'product'
 
 
 class TimeoutHTTPAdapter(HTTPAdapter):
