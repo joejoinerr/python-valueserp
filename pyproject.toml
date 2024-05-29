@@ -13,8 +13,6 @@ Sphinx = "^5.0.2"
 sphinx-rtd-theme = "^1.0.0"
 httpx = {extras = ["http2"], version = "^0.27.0"}
 
-[tool.poetry.dev-dependencies]
-
 [tool.poetry.group.dev.dependencies]
 pytest-asyncio = "^0.23.7"
 pytest = "^8.2.1"
