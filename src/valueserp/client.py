@@ -5,40 +5,22 @@ Currently, only Google is supported by VALUE SERP.
 
 __all__ = ['GoogleClient']
 
-import enum
+import json
+from types import TracebackType
 from typing import (
-    TYPE_CHECKING,
     Any,
     Dict,
     Optional,
-    Union
+    Union, Mapping
 )
+from typing_extensions import Self
 
-import requests as requests
-from requests.adapters import HTTPAdapter
-from requests.packages.urllib3.util.retry import Retry
-from requests_toolbelt.sessions import BaseUrlSession
+import httpx
 
 from valueserp import const
 import valueserp.exceptions
 from valueserp.serp import WebSERP
-from valueserp.searchtype import SearchType
-
-if TYPE_CHECKING:
-    import valueserp
-
-
-class TimeoutHTTPAdapter(HTTPAdapter):
-    """Custom HTTPAdapter to enable a default timeout"""
-    DEFAULT_TIMEOUT = 5  # seconds
-
-    def __init__(self, *args, **kwargs):
-        self.timeout = kwargs.pop('timeout', self.DEFAULT_TIMEOUT)
-        super().__init__(*args, **kwargs)
-
-    def send(self, request, **kwargs):
-        kwargs.setdefault('timeout', self.timeout)
-        return super().send(request, **kwargs)
+from valueserp.credentials import Credentials
 
 
 class GoogleClient:
@@ -51,19 +33,17 @@ class GoogleClient:
         credentials: An initialized :class:`valueserp.Credentials` object.
     """
 
-    def __init__(self, credentials: 'valueserp.Credentials'):
+    def __init__(self, credentials: Credentials, **kwargs):
         self.credentials = credentials
-        self._session = BaseUrlSession(const.ENDPOINT)
-        self._session.params = {'api_key': self.credentials.api_key}
-        # Set up default timeout and retry strategies
-        retry_strategy = Retry(total=3,
-                               status_forcelist=[429, 500, 502, 503, 504],
-                               allowed_methods=['HEAD', 'GET', 'OPTIONS'])
-        adapter = TimeoutHTTPAdapter(max_retries=retry_strategy)
-        self._session.mount('https://', adapter)
-        self._session.mount('http://', adapter)
+        transport = httpx.HTTPTransport(retries=kwargs.get('retries', 3))
+        self._session = httpx.Client(
+            base_url=const.ENDPOINT,
+            params={'api_key': self.credentials.api_key},
+            transport=transport,
+            timeout=kwargs.get('timeout', 5.0)
+        )
 
-    def search(self, params: Dict[str, Any]) -> Dict[str, Any]:
+    def search(self, params: Dict[str, Any]) -> Mapping[str, Any]:
         """Conducts a generic search with the API and returns the response.
 
         Args:
@@ -74,7 +54,7 @@ class GoogleClient:
         """
         response = self._request(const.API_PATH['search'],
                                  params=params)
-        return response
+        return json.loads(response)
 
     def web_search(self,
                    query: str,
@@ -105,7 +85,7 @@ class GoogleClient:
             'location': location,
         }
         search_params.update(kwargs)
-        response = self.search(search_params)
+        response = self.search(params=search_params)
 
         return WebSERP(response)
 
@@ -114,7 +94,7 @@ class GoogleClient:
                  request_type: str = 'GET',
                  params: Optional[Dict[str, Any]] = None,
                  headers: Optional[Dict[str, str]] = None,
-                 data: Optional[Dict[str, Any]] = None) -> dict:
+                 data: Optional[Dict[str, Any]] = None) -> str:
         """Makes a request to the VALUE SERP API.
 
         Args:
@@ -126,7 +106,7 @@ class GoogleClient:
             data: JSON data to send along with the request.
 
         Returns:
-            The API response as a dict parsed from JSON.
+            The API response body.
 
         Raises:
             APIError: The API responded with an error.
@@ -137,21 +117,37 @@ class GoogleClient:
                                         params=params,
                                         headers=headers,
                                         json=data)
-            raw_json = res.json()
             res.raise_for_status()
-        except requests.exceptions.HTTPError as e:
-            status_code = res.status_code
+        except httpx.HTTPStatusError as e:
+            status_code = e.response.status_code
+            raw_json = e.response.json()
             message = raw_json['request_info'].get(
-                'message', 'No additional information.')
+                'message', 'No additional information.'
+            )
             raise valueserp.exceptions.APIError(
                 f'VALUE SERP API responded with status {status_code}: {message}'
             ) from e
-        except requests.exceptions.ConnectionError as e:
+        except httpx.ConnectError as e:
             raise valueserp.exceptions.ConnectionError() from e
-        except requests.exceptions.Timeout as e:
+        except httpx.TimeoutException as e:
             raise valueserp.exceptions.Timeout() from e
-        except requests.exceptions.RequestException as e:
-            raise valueserp.exceptions.VSException(
-                'An unknown error occurred.') from e
+        except httpx.RequestError as e:
+            raise valueserp.exceptions.VSException('An unknown error occurred.') from e
 
-        return raw_json
+        return res.text
+
+    def close(self) -> None:
+        """Closes the HTTP session."""
+        self._session.close()
+
+    def __enter__(self) -> Self:
+        return self
+
+    def __exit__(
+        self,
+        exc_type: type[BaseException] | None,
+        exc_val: BaseException | None,
+        exc_tb: TracebackType | None,
+    ) -> None:
+        """Closes the client."""
+        self.close()
