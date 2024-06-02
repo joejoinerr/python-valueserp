@@ -4,10 +4,11 @@ from __future__ import annotations
 
 __all__ = ["Credentials"]
 
-import requests
+import httpx
 
+from valueserp import exceptions
 from valueserp.const import API_PATH, ENDPOINT
-from valueserp.exceptions import InvalidCredentialsError
+from valueserp.utils import parse_response_error
 
 
 class Credentials:
@@ -43,12 +44,12 @@ class Credentials:
         """
         params = {"api_key": self.api_key}
         account_path = ENDPOINT + API_PATH["account"]
-        res = requests.get(account_path, params=params)
         try:
-            res.raise_for_status()
-        except requests.exceptions.HTTPError as e:
-            if res.status_code == 401:
-                raise InvalidCredentialsError() from e
-            raise
+            response = httpx.get(account_path, params=params)
+            response.raise_for_status()
+        except httpx.HTTPStatusError as e:
+            if e.response.status_code == 401:
+                raise exceptions.InvalidCredentialsError() from e
+            parse_response_error(e)
 
         return True
