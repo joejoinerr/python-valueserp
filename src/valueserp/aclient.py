@@ -3,19 +3,11 @@
 Currently, only Google is supported by VALUE SERP.
 """
 
-__all__ = ['AsyncGoogleClient', 'SearchType']
+__all__ = ["AsyncGoogleClient", "SearchType"]
 
 import json
 from types import TracebackType
-from typing import (
-    TYPE_CHECKING,
-    Any,
-    Dict,
-    Optional,
-    Union,
-    Mapping,
-    Awaitable
-)
+from typing import TYPE_CHECKING, Any, Dict, Optional, Union, Mapping, Awaitable
 
 import httpx
 from typing_extensions import Self
@@ -39,12 +31,12 @@ class AsyncGoogleClient:
 
     def __init__(self, credentials: Credentials, **kwargs):
         self.credentials = credentials
-        transport = httpx.AsyncHTTPTransport(retries=kwargs.get('retries', 3))
+        transport = httpx.AsyncHTTPTransport(retries=kwargs.get("retries", 3))
         self._session = httpx.AsyncClient(
             base_url=const.ENDPOINT,
-            params={'api_key': self.credentials.api_key},
+            params={"api_key": self.credentials.api_key},
             transport=transport,
-            timeout=kwargs.get('timeout', 5.0)
+            timeout=kwargs.get("timeout", 5.0),
         )
 
     async def search(self, params: Dict[str, Any]) -> Mapping[str, Any]:
@@ -56,14 +48,16 @@ class AsyncGoogleClient:
         Returns:
             The API response as a dict parsed from JSON.
         """
-        response = await self._request(const.API_PATH['search'], params=params)
+        response = await self._request(const.API_PATH["search"], params=params)
         return json.loads(response)
 
-    async def web_search(self,
-                   query: str,
-                   location: Union[str, 'valueserp.Location', None] = None,
-                   site: Optional[str] = None,
-                   **kwargs) -> WebSERP:
+    async def web_search(
+        self,
+        query: str,
+        location: Union[str, "valueserp.Location", None] = None,
+        site: Optional[str] = None,
+        **kwargs,
+    ) -> WebSERP:
         """Makes a web search.
 
         Any `custom parameters`_ can be added as keyword arguments and will be
@@ -81,11 +75,11 @@ class AsyncGoogleClient:
         .. _custom parameters: https://www.valueserp.com/docs/search-api/searches/google/search#googleSearchParameters
         """
         if site:
-            query = f'site:{site} {query}'
+            query = f"site:{site} {query}"
 
         search_params = {
-            'q': query,
-            'location': location,
+            "q": query,
+            "location": location,
         }
         search_params.update(kwargs)
         response = await self.search(params=search_params)
@@ -95,10 +89,10 @@ class AsyncGoogleClient:
     async def _request(
         self,
         path: str,
-        request_type: str = 'GET',
+        request_type: str = "GET",
         params: Optional[Dict[str, Any]] = None,
         headers: Optional[Dict[str, str]] = None,
-        data: Optional[Dict[str, Any]] = None
+        data: Optional[Dict[str, Any]] = None,
     ) -> str:
         """Makes a request to the VALUE SERP API.
 
@@ -117,27 +111,25 @@ class AsyncGoogleClient:
             APIError: The API responded with an error.
         """
         try:
-            res = await self._session.request(request_type,
-                                        path,
-                                        params=params,
-                                        headers=headers,
-                                        json=data)
+            res = await self._session.request(
+                request_type, path, params=params, headers=headers, json=data
+            )
             res.raise_for_status()
         except httpx.HTTPStatusError as e:
             status_code = e.response.status_code
             raw_json = e.response.json()
-            message = raw_json['request_info'].get(
-                'message', 'No additional information.'
+            message = raw_json["request_info"].get(
+                "message", "No additional information."
             )
             raise valueserp.exceptions.APIError(
-                f'VALUE SERP API responded with status {status_code}: {message}'
+                f"VALUE SERP API responded with status {status_code}: {message}"
             ) from e
         except httpx.ConnectError as e:
             raise valueserp.exceptions.ConnectionError() from e
         except httpx.TimeoutException as e:
             raise valueserp.exceptions.Timeout() from e
         except httpx.RequestError as e:
-            raise valueserp.exceptions.VSException('An unknown error occurred.') from e
+            raise valueserp.exceptions.VSException("An unknown error occurred.") from e
 
         return res.text
 

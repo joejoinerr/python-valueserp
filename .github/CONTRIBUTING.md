@@ -15,7 +15,7 @@ requests.
 
 Pull requests - patches, improvements, new features - should remain focused in
 scope and avoid containing unrelated commits. Please adhere to
-[PEP 8](https://www.python.org/dev/peps/pep-0008/) as much as possible. 
+[PEP 8](https://www.python.org/dev/peps/pep-0008/) as much as possible.
 Docstrings should follow the [Google styleguide](https://google.github.io/styleguide/pyguide.html#38-comments-and-docstrings).
 
 To submit a pull request:
@@ -29,7 +29,7 @@ To submit a pull request:
    cd python-valueserp
    ```
 
-2. Checkout the develop branch. If you cloned a while ago, get the latest 
+2. Checkout the develop branch. If you cloned a while ago, get the latest
    changes from upstream:
 
    ```bash
