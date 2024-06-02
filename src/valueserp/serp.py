@@ -2,9 +2,9 @@
 
 from __future__ import annotations
 
-from typing import List, Optional
+from typing import List, Mapping, Optional
 
-from valueserp.models import SERPInfo, FeaturedSnippet, OrganicLink, PAAItem
+from valueserp.models import FeaturedSnippet, OrganicLink, PAAItem, SERPInfo
 
 
 class BaseSERP:
@@ -14,15 +14,13 @@ class BaseSERP:
         raw: The raw SERP data as retrieved from the API.
     """
 
-    def __init__(self, raw):
+    def __init__(self, raw: Mapping) -> None:
+        """Initializes the BaseSERP."""
         self.raw = raw
 
 
 class WebSERP(BaseSERP):
     """Represents a standard web search results page."""
-
-    def __init__(self, raw):
-        super().__init__(raw)
 
     def info(self) -> SERPInfo:
         """Information about the SERP."""

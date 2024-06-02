@@ -6,17 +6,18 @@ Currently, only Google is supported by VALUE SERP.
 __all__ = ["AsyncGoogleClient", "SearchType"]
 
 import json
+from collections.abc import Mapping
 from types import TracebackType
-from typing import TYPE_CHECKING, Any, Dict, Optional, Union, Mapping, Awaitable
+from typing import Any, Dict, Optional, Union
 
 import httpx
 from typing_extensions import Self
 
-from valueserp import const
 import valueserp.exceptions
-from valueserp.serp import WebSERP
-from valueserp.searchtype import SearchType
+from valueserp import const
 from valueserp.credentials import Credentials
+from valueserp.searchtype import SearchType
+from valueserp.serp import WebSERP
 
 
 class AsyncGoogleClient:
@@ -29,7 +30,8 @@ class AsyncGoogleClient:
         credentials: An initialized :class:`valueserp.Credentials` object.
     """
 
-    def __init__(self, credentials: Credentials, **kwargs):
+    def __init__(self, credentials: Credentials, **kwargs) -> None:
+        """Initializes the AsyncGoogleClient."""
         self.credentials = credentials
         transport = httpx.AsyncHTTPTransport(retries=kwargs.get("retries", 3))
         self._session = httpx.AsyncClient(
@@ -67,6 +69,7 @@ class AsyncGoogleClient:
             query: The query to search in Google.
             location: The location to use for the search in Google.
             site: Add a domain to use a site: search
+            **kwargs: Custom parameters to pass to the API.
 
         Returns:
             A :class:`~valueserp.serp.web.WebSERP` object containing the API
@@ -125,11 +128,11 @@ class AsyncGoogleClient:
                 f"VALUE SERP API responded with status {status_code}: {message}"
             ) from e
         except httpx.ConnectError as e:
-            raise valueserp.exceptions.ConnectionError() from e
+            raise valueserp.exceptions.RequestConnectionError() from e
         except httpx.TimeoutException as e:
-            raise valueserp.exceptions.Timeout() from e
+            raise valueserp.exceptions.RequestTimeoutError() from e
         except httpx.RequestError as e:
-            raise valueserp.exceptions.VSException("An unknown error occurred.") from e
+            raise valueserp.exceptions.VSError("An unknown error occurred.") from e
 
         return res.text
 
@@ -138,6 +141,7 @@ class AsyncGoogleClient:
         await self._session.aclose()
 
     async def __aenter__(self) -> Self:
+        """Enters the async context manager."""
         return self
 
     async def __aexit__(
@@ -146,5 +150,5 @@ class AsyncGoogleClient:
         exc_val: BaseException | None,
         exc_tb: TracebackType | None,
     ) -> None:
-        """Closes the client."""
+        """Exits the async context manager."""
         await self.close()

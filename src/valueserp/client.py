@@ -6,16 +6,17 @@ Currently, only Google is supported by VALUE SERP.
 __all__ = ["GoogleClient"]
 
 import json
+from collections.abc import Mapping
 from types import TracebackType
-from typing import Any, Dict, Optional, Union, Mapping
-from typing_extensions import Self
+from typing import Any, Dict, Optional, Union
 
 import httpx
+from typing_extensions import Self
 
-from valueserp import const
 import valueserp.exceptions
-from valueserp.serp import WebSERP
+from valueserp import const
 from valueserp.credentials import Credentials
+from valueserp.serp import WebSERP
 
 
 class GoogleClient:
@@ -28,7 +29,8 @@ class GoogleClient:
         credentials: An initialized :class:`valueserp.Credentials` object.
     """
 
-    def __init__(self, credentials: Credentials, **kwargs):
+    def __init__(self, credentials: Credentials, **kwargs) -> None:
+        """Initializes the GoogleClient."""
         self.credentials = credentials
         transport = httpx.HTTPTransport(retries=kwargs.get("retries", 3))
         self._session = httpx.Client(
@@ -66,6 +68,7 @@ class GoogleClient:
             query: The query to search in Google.
             location: The location to use for the search in Google.
             site: Add a domain to use a site: search
+            **kwargs: Custom parameters to pass to the API.
 
         Returns:
             A :class:`~valueserp.serp.web.WebSERP` object containing the API
@@ -124,11 +127,11 @@ class GoogleClient:
                 f"VALUE SERP API responded with status {status_code}: {message}"
             ) from e
         except httpx.ConnectError as e:
-            raise valueserp.exceptions.ConnectionError() from e
+            raise valueserp.exceptions.RequestConnectionError() from e
         except httpx.TimeoutException as e:
-            raise valueserp.exceptions.Timeout() from e
+            raise valueserp.exceptions.RequestTimeoutError() from e
         except httpx.RequestError as e:
-            raise valueserp.exceptions.VSException("An unknown error occurred.") from e
+            raise valueserp.exceptions.VSError("An unknown error occurred.") from e
 
         return res.text
 
@@ -137,6 +140,7 @@ class GoogleClient:
         self._session.close()
 
     def __enter__(self) -> Self:
+        """Enters the async context manager."""
         return self
 
     def __exit__(
@@ -145,5 +149,5 @@ class GoogleClient:
         exc_val: BaseException | None,
         exc_tb: TracebackType | None,
     ) -> None:
-        """Closes the client."""
+        """Exits the async context manager."""
         self.close()
