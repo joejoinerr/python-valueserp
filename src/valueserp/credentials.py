@@ -1,6 +1,6 @@
 """Provides the Credentials object for use in the Client."""
 
-__all__ = ['Credentials']
+__all__ = ["Credentials"]
 
 import requests
 
@@ -40,16 +40,14 @@ class Credentials:
 
         .. _account API endpoint: https://www.valueserp.com/docs/account-api
         """
-        params = {'api_key': self.api_key}
-        account_path = ENDPOINT + API_PATH['account']
+        params = {"api_key": self.api_key}
+        account_path = ENDPOINT + API_PATH["account"]
         res = requests.get(account_path, params=params)
         try:
             res.raise_for_status()
         except requests.exceptions.HTTPError as e:
             if res.status_code == 401:
-                raise InvalidCredentials(
-                    'The API key provided is invalid.'
-                ) from e
+                raise InvalidCredentials("The API key provided is invalid.") from e
             else:
                 raise
 
