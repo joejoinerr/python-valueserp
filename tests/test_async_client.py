@@ -10,7 +10,7 @@ from valueserp.serp import WebSERP
 
 @pytest.fixture(scope="module")
 async def client():
-    creds = Credentials('TESTKEY', auto_validate=False)
+    creds = Credentials('TESTKEY')
     async with AsyncGoogleClient(creds) as client:
         yield client
 
