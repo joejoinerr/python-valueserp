@@ -15,7 +15,9 @@ class VSError(Exception):
 class InvalidCredentialsError(VSError, ValueError):
     """The provided credentials are invalid."""
 
-    pass
+    def __init__(self) -> None:
+        """Initializes the InvalidCredentialsError exception."""
+        super().__init__("The provided API credentials are invalid.")
 
 
 class APIError(VSError):
@@ -24,17 +26,21 @@ class APIError(VSError):
     pass
 
 
-class RequestConnectionError(VSError):
-    """Failed to connect to the VALUE SERP API."""
+class RequestError(APIError):
+    """Request to the VALUE SERP API failed."""
 
-    def __init__(self, message: str | None = None) -> None:
-        """Initializes the RequestConnectionError exception."""
-        super().__init__(message or "Failed to connect to the VALUE SERP API.")
+    def __init__(self) -> None:
+        """Initializes the RequestError exception."""
+        super().__init__("API request failed - no response received.")
 
 
-class RequestTimeoutError(VSError):
-    """Connection to the VALUE SERP API timed out."""
+class ResponseError(APIError):
+    """Response from the VALUE SERP API was not successful."""
 
-    def __init__(self, message: str | None = None) -> None:
-        """Initializes the RequestTimeoutError exception."""
-        super().__init__(message or "Connection to the VALUE SERP API timed out.")
+    def __init__(self, status_code: int, response_message: str) -> None:
+        """Initializes the ResponseError exception."""
+        self.status_code = status_code
+        self.response_message = response_message
+        super().__init__(
+            f"API responded with status code {self.status_code}: {self.response_message}"
+        )
