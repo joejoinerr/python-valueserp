@@ -1,3 +1,5 @@
+"""Search types."""
+
 __all__ = ["SearchType"]
 
 import enum

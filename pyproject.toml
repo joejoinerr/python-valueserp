@@ -1,3 +1,6 @@
+[project]
+requires-python = ">=3.9,<4"
+
 [tool.poetry]
 name = "valueserp"
 version = "0.2.0"
@@ -31,11 +34,13 @@ fix = true
 extend-exclude = ["tests"]
 
 [tool.ruff.lint]
-select = ["E", "F", "I", "C90", "B", "N", "D", "ANN", "TRY", "PD", "RUF200", "UP"]
+select = ["E", "F", "I", "C90", "B", "N", "D", "ANN", "PD", "RUF200"]
+#select = ["E", "F", "I", "C90", "B", "N", "D", "ANN", "TRY", "PD", "RUF200", "UP"]
 ignore = ["E501", "B904", "ANN101", "ANN003"]
 
-[tool.ruff.lint.per-file-ignores]
+[tool.ruff.lint.extend-per-file-ignores]
 "__init__.py" = ["F401", "F403", "E402"]
+"docs/conf.py" = ["D100"]
 
 [tool.ruff.lint.pydocstyle]
 convention = "google"

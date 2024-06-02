@@ -5,7 +5,7 @@ __all__ = ["Credentials"]
 import requests
 
 from valueserp.const import API_PATH, ENDPOINT
-from valueserp.exceptions import InvalidCredentials
+from valueserp.exceptions import InvalidCredentialsError
 
 
 class Credentials:
@@ -21,7 +21,8 @@ class Credentials:
         api_key: A consumer API key provided by VALUE SERP.
     """
 
-    def __init__(self, api_key: str, auto_validate: bool = True):
+    def __init__(self, api_key: str, auto_validate: bool = True) -> None:
+        """Initializes the Credentials object."""
         self.api_key = api_key
         if auto_validate:
             self.validate()
@@ -36,7 +37,7 @@ class Credentials:
             True if the API key is valid.
 
         Raises:
-            InvalidCredentials: The credentials are not valid.
+            InvalidCredentialsError: The credentials are not valid.
 
         .. _account API endpoint: https://www.valueserp.com/docs/account-api
         """
@@ -47,7 +48,7 @@ class Credentials:
             res.raise_for_status()
         except requests.exceptions.HTTPError as e:
             if res.status_code == 401:
-                raise InvalidCredentials("The API key provided is invalid.") from e
+                raise InvalidCredentialsError("The API key provided is invalid.") from e
             else:
                 raise
 
