@@ -2,7 +2,7 @@
 
 from __future__ import annotations
 
-from typing import List, Mapping, Optional
+from collections.abc import Mapping
 
 from valueserp.models import FeaturedSnippet, OrganicLink, PAAItem, SERPInfo
 
@@ -37,7 +37,7 @@ class WebSERP(BaseSERP):
         )
 
     @property
-    def links(self) -> List[OrganicLink]:
+    def links(self) -> list[OrganicLink]:
         """A list of the organic search results."""
         raw_links = self.raw.get("organic_results", [])
 
@@ -58,7 +58,7 @@ class WebSERP(BaseSERP):
         return links
 
     @property
-    def featured_snippet(self) -> Optional[FeaturedSnippet]:
+    def featured_snippet(self) -> FeaturedSnippet | None:
         """The featured snippet, if shown."""
         raw_snippet = self.raw.get("answer_box")
         if not raw_snippet:
@@ -73,7 +73,7 @@ class WebSERP(BaseSERP):
         )
 
     @property
-    def related_searches(self) -> List[str] | None:
+    def related_searches(self) -> list[str] | None:
         """A list of related search terms."""
         raw_rel_searches = self.raw.get("related_searches", [])
         if not raw_rel_searches:
@@ -85,7 +85,7 @@ class WebSERP(BaseSERP):
         return list(related_searches)
 
     @property
-    def people_also_ask(self) -> Optional[List[PAAItem]]:
+    def people_also_ask(self) -> list[PAAItem] | None:
         """A list of items from the "People also ask" feature."""
         raw_paa = self.raw.get("related_questions", [])
         if not raw_paa:

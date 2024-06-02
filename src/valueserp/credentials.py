@@ -1,5 +1,7 @@
 """Provides the Credentials object for use in the Client."""
 
+from __future__ import annotations
+
 __all__ = ["Credentials"]
 
 import requests
@@ -48,8 +50,7 @@ class Credentials:
             res.raise_for_status()
         except requests.exceptions.HTTPError as e:
             if res.status_code == 401:
-                raise InvalidCredentialsError("The API key provided is invalid.") from e
-            else:
-                raise
+                raise InvalidCredentialsError() from e
+            raise
 
         return True
