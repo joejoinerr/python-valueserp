@@ -15,7 +15,7 @@ from typing import TYPE_CHECKING, Any
 import httpx
 from typing_extensions import Self
 
-from valueserp import const, exceptions
+from valueserp import const, exceptions, utils
 from valueserp.credentials import Credentials
 from valueserp.searchtype import SearchType
 from valueserp.serp import WebSERP
@@ -123,18 +123,11 @@ class AsyncGoogleClient:
             )
             res.raise_for_status()
         except httpx.HTTPStatusError as e:
-            status_code = e.response.status_code
-            raw_json = e.response.json()
-            message = raw_json["request_info"].get(
-                "message", "No additional information."
-            )
-            raise exceptions.ResponseError(
-                status_code=status_code, response_message=message
-            ) from e
+            utils.parse_response_error(e)
         except httpx.RequestError as e:
             raise exceptions.RequestError() from e
-
-        return res.text
+        else:
+            return res.text
 
     async def close(self) -> None:
         """Closes the HTTP session."""
