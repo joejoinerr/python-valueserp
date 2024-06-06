@@ -31,7 +31,6 @@ asyncio_mode = "auto"
 line-length = 88
 src = ["src"]
 fix = true
-extend-exclude = ["tests"]
 
 [tool.ruff.lint]
 select = ["E", "F", "I", "C90", "B", "N", "D", "ANN", "TRY", "PD", "RUF200", "UP"]
@@ -40,6 +39,7 @@ ignore = ["E501", "B904", "ANN101", "ANN003"]
 [tool.ruff.lint.extend-per-file-ignores]
 "__init__.py" = ["F401", "F403", "E402"]
 "docs/conf.py" = ["D100"]
+"tests/**/*.py" = ["ANN"]
 
 [tool.ruff.lint.pydocstyle]
 convention = "google"
