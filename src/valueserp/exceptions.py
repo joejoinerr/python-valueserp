@@ -12,18 +12,18 @@ class VSError(Exception):
     pass
 
 
-class InvalidCredentialsError(VSError, ValueError):
+class APIError(VSError):
+    """The VALUE SERP API responded with an error."""
+
+    pass
+
+
+class InvalidCredentialsError(APIError, ValueError):
     """The provided credentials are invalid."""
 
     def __init__(self) -> None:
         """Initializes the InvalidCredentialsError exception."""
         super().__init__("The provided API credentials are invalid.")
-
-
-class APIError(VSError):
-    """The VALUE SERP API responded with an error."""
-
-    pass
 
 
 class RequestError(APIError):
