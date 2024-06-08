@@ -27,15 +27,17 @@ if TYPE_CHECKING:
 class AsyncGoogleClient:
     """The primary async interface for interacting with Google via VALUE SERP.
 
-    Args:
-        credentials: An initialized :class:`valueserp.Credentials` object.
-
     Attributes:
         credentials: An initialized :class:`valueserp.Credentials` object.
     """
 
     def __init__(self, credentials: Credentials, **kwargs) -> None:
-        """Initializes the AsyncGoogleClient."""
+        """Initializes the AsyncGoogleClient.
+
+        Args:
+            credentials: An initialized :class:`valueserp.Credentials` object.
+            **kwargs: Additional keyword arguments to pass to the HTTP client.
+        """
         self.credentials = credentials
         transport = httpx.AsyncHTTPTransport(retries=kwargs.get("retries", 3))
         self._session = httpx.AsyncClient(
@@ -45,7 +47,7 @@ class AsyncGoogleClient:
             timeout=kwargs.get("timeout", 5.0),
         )
 
-    async def search(self, params: dict[str, Any]) -> Mapping[str, Any]:
+    async def search(self, params: Mapping[str, Any]) -> Mapping[str, Any]:
         """Conducts a generic search with the API and returns the response.
 
         Args:
@@ -97,9 +99,9 @@ class AsyncGoogleClient:
         self,
         path: str,
         request_type: str = "GET",
-        params: dict[str, Any] | None = None,
-        headers: dict[str, str] | None = None,
-        data: dict[str, Any] | None = None,
+        params: Mapping[str, Any] | None = None,
+        headers: Mapping[str, str] | None = None,
+        data: Mapping[str, Any] | None = None,
     ) -> str:
         """Makes a request to the VALUE SERP API.
 

@@ -24,15 +24,17 @@ from valueserp.serp import WebSERP
 class GoogleClient:
     """The primary interface for interacting with Google via VALUE SERP.
 
-    Args:
-        credentials: An initialized :class:`valueserp.Credentials` object.
-
     Attributes:
         credentials: An initialized :class:`valueserp.Credentials` object.
     """
 
     def __init__(self, credentials: Credentials, **kwargs) -> None:
-        """Initializes the GoogleClient."""
+        """Initializes the GoogleClient.
+
+        Args:
+            credentials: An initialized :class:`valueserp.Credentials` object.
+            **kwargs: Additional keyword arguments to pass to the HTTP client.
+        """
         self.credentials = credentials
         transport = httpx.HTTPTransport(retries=kwargs.get("retries", 3))
         self._session = httpx.Client(
@@ -42,7 +44,7 @@ class GoogleClient:
             timeout=kwargs.get("timeout", 5.0),
         )
 
-    def search(self, params: dict[str, Any]) -> Mapping[str, Any]:
+    def search(self, params: Mapping[str, Any]) -> Mapping[str, Any]:
         """Conducts a generic search with the API and returns the response.
 
         Args:
@@ -94,9 +96,9 @@ class GoogleClient:
         self,
         path: str,
         request_type: str = "GET",
-        params: dict[str, Any] | None = None,
-        headers: dict[str, str] | None = None,
-        data: dict[str, Any] | None = None,
+        params: Mapping[str, Any] | None = None,
+        headers: Mapping[str, str] | None = None,
+        data: Mapping[str, Any] | None = None,
     ) -> str:
         """Makes a request to the VALUE SERP API.
 
@@ -112,7 +114,7 @@ class GoogleClient:
             The API response body.
 
         Raises:
-            APIError: The API responded with an error.
+            RequestError: There was a problem making the request to the API.
         """
         try:
             res = self._session.request(
