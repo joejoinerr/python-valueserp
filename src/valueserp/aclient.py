@@ -90,6 +90,8 @@ class AsyncGoogleClient:
             "q": query,
             "location": location,
         }
+        # We don't want to override anything essential.
+        kwargs = {k: v for k, v in kwargs.items() if k not in search_params}
         search_params.update(kwargs)
         response = await self.search(params=search_params)
 
