@@ -2,6 +2,8 @@
 
 from __future__ import annotations
 
+__all__ = ["SERPInfo", "OrganicLink", "FeaturedSnippet", "PAAItem"]
+
 import dataclasses
 
 
