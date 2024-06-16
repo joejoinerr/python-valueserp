@@ -7,3 +7,6 @@ API_PATH = {
     "locations": "/locations",
     "account": "/account",
 }
+
+DEFAULT_TIMEOUT = 120.0
+DEFAULT_RETRIES = 3

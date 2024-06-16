@@ -16,6 +16,7 @@ import httpx
 from typing_extensions import Self
 
 from valueserp import const, exceptions, utils
+from valueserp.const import DEFAULT_RETRIES, DEFAULT_TIMEOUT
 from valueserp.credentials import Credentials
 from valueserp.searchtype import SearchType
 from valueserp.serp import WebSERP
@@ -39,12 +40,14 @@ class AsyncGoogleClient:
             **kwargs: Additional keyword arguments to pass to the HTTP client.
         """
         self.credentials = credentials
-        transport = httpx.AsyncHTTPTransport(retries=kwargs.get("retries", 3))
+        transport = httpx.AsyncHTTPTransport(
+            retries=kwargs.get("retries", DEFAULT_RETRIES)
+        )
         self._session = httpx.AsyncClient(
             base_url=const.ENDPOINT,
             params={"api_key": self.credentials.api_key},
             transport=transport,
-            timeout=kwargs.get("timeout", 5.0),
+            timeout=kwargs.get("timeout", DEFAULT_TIMEOUT),
         )
 
     async def search(self, params: Mapping[str, Any]) -> Mapping[str, Any]:
