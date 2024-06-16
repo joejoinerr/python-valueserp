@@ -6,8 +6,9 @@ import httpx
 import pytest
 import respx
 
-from valueserp import const, exceptions
+from valueserp import AsyncGoogleClient, const, exceptions
 from valueserp.client import GoogleClient
+from valueserp.const import DEFAULT_RETRIES, DEFAULT_TIMEOUT
 from valueserp.credentials import Credentials
 from valueserp.serp import WebSERP
 
@@ -37,7 +38,13 @@ class TestGoogleClient:
 
     def test_init(self, creds: Credentials):
         """Tests the initialization of the client."""
-        pass
+        client = AsyncGoogleClient(creds)
+        assert client.credentials == creds
+        assert isinstance(client._session, httpx.AsyncClient)
+        assert client._session.base_url == const.ENDPOINT
+        assert dict(client._session.params) == {"api_key": creds.api_key}
+        assert client._session.timeout == httpx.Timeout(DEFAULT_TIMEOUT)
+        assert client._session._transport._pool._retries == DEFAULT_RETRIES
 
     def test_close(self, creds: Credentials):
         """Tests the `close` method."""

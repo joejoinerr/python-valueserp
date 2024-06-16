@@ -8,6 +8,7 @@ import respx
 
 from valueserp import const, exceptions
 from valueserp.aclient import AsyncGoogleClient
+from valueserp.const import DEFAULT_RETRIES, DEFAULT_TIMEOUT
 from valueserp.credentials import Credentials
 from valueserp.serp import WebSERP
 
@@ -42,8 +43,8 @@ class TestAsyncGoogleClient:
         assert isinstance(client._session, httpx.AsyncClient)
         assert client._session.base_url == const.ENDPOINT
         assert dict(client._session.params) == {"api_key": creds.api_key}
-        assert client._session.timeout == httpx.Timeout(5.0)
-        assert client._session._transport._pool._retries == 3
+        assert client._session.timeout == httpx.Timeout(DEFAULT_TIMEOUT)
+        assert client._session._transport._pool._retries == DEFAULT_RETRIES
 
     @pytest.mark.asyncio
     async def test_close(self, creds: Credentials):
