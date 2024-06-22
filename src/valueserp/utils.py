@@ -23,7 +23,9 @@ def parse_response_error(exception: httpx.HTTPStatusError) -> NoReturn:
     if status_code == 401:
         raise exceptions.InvalidCredentialsError() from exception
     raw_json = exception.response.json()
-    message = raw_json["request_info"].get("message", "No additional information.")
+    message = raw_json.get("request_info", {}).get(
+        "message", "No additional information."
+    )
     raise exceptions.ResponseError(
         status_code=status_code, response_message=message
     ) from exception
