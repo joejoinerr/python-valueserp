@@ -4,7 +4,7 @@ requires-python = ">= 3.9, < 4"
 
 [tool.poetry]
 name = "valueserp"
-version = "0.3.0"
+version = "0.3.1"
 description = "Client library for VALUE SERP: https://www.valueserp.com/"
 authors = ["Joe Joiner <2454320+joejoinerr@users.noreply.github.com>"]
 
