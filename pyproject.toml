@@ -1,31 +1,29 @@
 [project]
 name = "valueserp"
-requires-python = ">= 3.9, < 4"
-
-[tool.poetry]
-name = "valueserp"
 version = "0.4.0"
 description = "Client library for VALUE SERP: https://www.valueserp.com/"
-authors = ["Joe Joiner <2454320+joejoinerr@users.noreply.github.com>"]
+authors = [{ name = "Joe Joiner", email = "2454320+joejoinerr@users.noreply.github.com" }]
+requires-python = ">= 3.9, < 4"
+dependencies = [
+    "loguru>=0.7.2,<0.8",
+    "httpx[http2]>=0.28.1,<0.29",
+    "typing-extensions>=4.12.2,<5",
+]
 
-[tool.poetry.dependencies]
-python = ">=3.9,<4"
-loguru = "^0.7.2"
-httpx = {extras = ["http2"], version = "^0.28.1"}
-typing-extensions = "^4.12.2"
-
-[tool.poetry.group.dev.dependencies]
-pytest-asyncio = "^0.23.7"
-pytest = "^8.2.1"
-respx = "^0.21.1"
-pre-commit = "^3.7.1"
-ruff = "^0.4.10"
-Sphinx = "^5.0.2"
-sphinx-rtd-theme = "^1.0.0"
+[dependency-groups]
+dev = [
+    "pytest-asyncio>=0.23.7,<0.24",
+    "pytest>=8.2.1,<9",
+    "respx>=0.21.1,<0.22",
+    "pre-commit>=3.7.1,<4",
+    "ruff>=0.4.10,<0.5",
+    "Sphinx>=5.0.2,<6",
+    "sphinx-rtd-theme>=1.0.0,<2",
+]
 
 [build-system]
-requires = ["poetry-core>=1.0.0"]
-build-backend = "poetry.core.masonry.api"
+requires = ["hatchling"]
+build-backend = "hatchling.build"
 
 [tool.pytest.ini_options]
 asyncio_mode = "auto"
